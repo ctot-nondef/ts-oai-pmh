@@ -10,6 +10,7 @@ import { OaiPmhError } from './errors'
 import { getOaiListItems } from './oai-pmh-list'
 import { parseOaiPmhXml } from './oai-pmh-xml'
 import { sleep } from './utils'
+import {IOAIListRecordsRequestParamsInterface} from "./IOAIRequestParams.interface";
 
 /**
  * @implements IOAIHarvesterInterface
@@ -143,11 +144,20 @@ export class OaiPmh implements IOAIHarvesterInterface {
     return obj["OAI-PMH"].ListMetadataFormats.metadataFormat;
   }
 
-  listRecords (options) {
-    return getOaiListItems(this, 'ListRecords', 'record', options)
+  /**
+   * harvest records from a repository
+   * https://www.openarchives.org/OAI/openarchivesprotocol.html#ListRecords
+   * @param params
+   */
+  listRecords (params: IOAIListRecordsRequestParamsInterface) {
+    return getOaiListItems(this, 'ListRecords', {...params}, 'record' )
   }
 
+  /**
+   * retrieve the set structure of a repository
+   * https://www.openarchives.org/OAI/openarchivesprotocol.html#ListSets
+   */
   listSets () {
-    return getOaiListItems(this, 'ListSets', 'set')
+    return getOaiListItems(this, 'ListSets', {}, 'set')
   }
 }

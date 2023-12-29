@@ -8,7 +8,6 @@ export interface IOAIListIdentifiersRequestParamsInterface {
     from: Date;
     until: Date;
     set: string;
-    resumptionToken?: string;
 }
 
 export interface IOAIListMetadataFormatsRequestParamsInterface {
@@ -20,9 +19,4 @@ export interface IOAIListRecordsRequestParamsInterface {
     from: Date;
     until: Date;
     set: string;
-    resumptionToken?: string;
-}
-
-export interface IOAIListSetsRequestParamsInterface {
-    resumptionToken?: string;
 }
