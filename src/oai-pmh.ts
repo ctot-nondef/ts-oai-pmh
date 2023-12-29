@@ -1,4 +1,3 @@
-import { assign, get } from 'lodash'
 import axios,{ AxiosRequestConfig, AxiosResponse } from "axios"
 
 import { IOAIHarvesterInterface } from "./IOAIHarvester.interface";
@@ -27,7 +26,7 @@ export class OaiPmh implements IOAIHarvesterInterface {
       retryMin: 5, // wait at least 5 seconds
       retryMax: 600 // wait at maximum 600 seconds
     }
-    assign(this.options, _options)
+    Object.assign(this.options, _options)
   }
 
   /**
