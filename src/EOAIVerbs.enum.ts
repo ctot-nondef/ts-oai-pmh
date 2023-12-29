@@ -1,10 +1,14 @@
-export enum EOAIVerbsEnum {
+export enum EOAISingleVerbsEnum {
     "GetRecord",
     "Identify",
-    "ListIdentifiers",
     "ListMetadataFormats",
+}
+
+export enum EOAIListVerbsEnum {
+    "ListIdentifiers",
     "ListRecords",
     "ListSets"
 }
 
-export type TOAIVerbs = keyof typeof EOAIVerbsEnum;
+export type TOAISingleVerbs = keyof typeof EOAISingleVerbsEnum;
+export type TOAIListVerbs = keyof typeof EOAIListVerbsEnum;

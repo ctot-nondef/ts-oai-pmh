@@ -13,6 +13,9 @@ dependencies:
   xml2js:
     specifier: ^0.6.2
     version: 0.6.2
+  zod:
+    specifier: ^3.22.4
+    version: 3.22.4
 
 devDependencies:
   '@types/axios':
@@ -21,6 +24,9 @@ devDependencies:
   '@types/chai':
     specifier: 4.1.2
     version: 4.1.2
+  '@types/lodash':
+    specifier: ^4.14.202
+    version: 4.14.202
   '@types/mocha':
     specifier: 2.2.48
     version: 2.2.48
@@ -310,6 +316,10 @@ packages:
 
   /@types/chai@4.1.2:
     resolution: {integrity: sha512-D8uQwKYUw2KESkorZ27ykzXgvkDJYXVEihGklgfp5I4HUP8D6IxtcdLTMB1emjQiWzV7WZ5ihm1cxIzVwjoleQ==}
+    dev: true
+
+  /@types/lodash@4.14.202:
+    resolution: {integrity: sha512-OvlIYQK9tNneDlS0VN54LLd5uiPCBOp7gS5Z0f1mjoJYBrtStzgmJBxONW3U6OZqdtNzZPmn9BS/7WI7BFFcFQ==}
     dev: true
 
   /@types/mocha@2.2.48:
@@ -1618,3 +1628,7 @@ packages:
     resolution: {integrity: sha512-uTv8J/wiWTgUTg+9vLTi//leUl5vDQS6uii/emeTb2ssY7vl6QWf2fFbIIGjnhjvbdKlU0ed7QPgY1htTC86jQ==}
     engines: {node: '>=4'}
     dev: true
+
+  /zod@3.22.4:
+    resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
+    dev: false

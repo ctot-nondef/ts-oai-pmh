@@ -4,7 +4,7 @@ import axios,{ AxiosRequestConfig, AxiosResponse } from "axios"
 import { IOAIHarvesterInterface } from "./IOAIHarvester.interface";
 import { IOAIHarvesterOptionsInterface } from "./IOAIHarvesterOptions.interface";
 import  * as RequestParamInterfaces from "./IOAIRequestParams.interface";
-import {TOAIVerbs} from "./EOAIVerbs.enum";
+import {TOAISingleVerbs, TOAIListVerbs } from "./EOAIVerbs.enum";
 
 import { OaiPmhError } from './errors'
 import { getOaiListItems } from './oai-pmh-list'
@@ -43,7 +43,7 @@ export class OaiPmh implements IOAIHarvesterInterface {
    * @param verb
    * @param params
    */
-  private request = async (requestConfig: AxiosRequestConfig, verb: TOAIVerbs, params: Record<string, any>) => {
+  public request = async (requestConfig: AxiosRequestConfig, verb: TOAISingleVerbs | TOAIListVerbs, params: Record<string, any>) => {
     let res: AxiosResponse;
 
     do {
@@ -62,7 +62,7 @@ export class OaiPmh implements IOAIHarvesterInterface {
         const retryAfter = res.headers['retry-after']
 
         if (!retryAfter) {
-          throw new OaiPmhError('Status code 503 without Retry-After header.')
+          throw new OaiPmhError('Status code 503 without Retry-After header.', "none")
         }
 
         let retrySeconds: number;
@@ -71,7 +71,7 @@ export class OaiPmh implements IOAIHarvesterInterface {
         } else {
           const retryDate = new Date(retryAfter)
           if (!retryDate) {
-            throw new OaiPmhError('Status code 503 with invalid Retry-After header.')
+            throw new OaiPmhError('Status code 503 with invalid Retry-After header.', "none")
           }
           retrySeconds = Math.floor((retryDate as unknown as number - (new Date() as unknown as number)) / 1000)
         }
@@ -90,7 +90,8 @@ export class OaiPmh implements IOAIHarvesterInterface {
 
     if (res.status !== 200) {
       throw new OaiPmhError(
-        `Unexpected status code ${res.status} (expected 200).`
+        `Unexpected status code ${res.status} (expected 200).`,
+          "none"
       )
     }
 
@@ -104,7 +105,7 @@ export class OaiPmh implements IOAIHarvesterInterface {
   public identify = async () => {
     const res = await this.request({}, 'Identify', {})
     const obj = await parseOaiPmhXml(res.data)
-    return obj.Identify
+    return obj["OAI-PMH"].Identify;
   }
 
   /**
@@ -118,7 +119,7 @@ export class OaiPmh implements IOAIHarvesterInterface {
     })
 
     const obj = await parseOaiPmhXml(res.data)
-    return get(obj, 'GetRecord.record')
+    return obj["OAI-PMH"].GetRecord.record;
   }
 
   /**
@@ -127,7 +128,7 @@ export class OaiPmh implements IOAIHarvesterInterface {
    * @param params
    */
   public listIdentifiers = (params: RequestParamInterfaces.IOAIListIdentifiersRequestParamsInterface) => {
-    return getOaiListItems(this, {verb: "ListIdentifiers", ...params}, 'header')
+    return getOaiListItems(this, "ListIdentifiers",{ ...params}, 'header')
   }
 
   /**
@@ -138,8 +139,8 @@ export class OaiPmh implements IOAIHarvesterInterface {
     const res = await this.request({}, 'ListMetadataFormats', {
         identifier: params.identifier
     })
-    const obj = await parseOaiPmhXml(res.body)
-    return get(obj, 'ListMetadataFormats.metadataFormat')
+    const obj = await parseOaiPmhXml(res.data)
+    return obj["OAI-PMH"].ListMetadataFormats.metadataFormat;
   }
 
   listRecords (options) {
