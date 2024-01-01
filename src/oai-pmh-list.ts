@@ -1,4 +1,4 @@
-import {OaiPmh} from "./oai-pmh";
+import { OaiPmh } from "./index";
 import { parseOaiPmhXml } from './oai-pmh-xml'
 
 import {TOAIListVerbs} from "./EOAIVerbs.enum";

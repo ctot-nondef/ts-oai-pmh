@@ -1,11 +1,13 @@
-import xml2js from 'xml2js';
+import * as xml2js from 'xml2js';;
 import { z } from "zod";
 import { OaiPmhError } from './errors'
 
-const ZOAIError = z.object({
-  code: z.enum(["cannotDisseminateFormat", "idDoesNotExist", "badArgument", "badVerb", "noMetadataFormats", "noRecordsMatch", "badResumptionToken", "noSetHierarchy"]),
+const ZOAIError = z.array(z.object({
+  "$": z.object({
+    code: z.enum(["cannotDisseminateFormat", "idDoesNotExist", "badArgument", "badVerb", "noMetadataFormats", "noRecordsMatch", "badResumptionToken", "noSetHierarchy"]),
+  }),
   _: z.string()
-})
+}))
 
 const ZOAIResumptionToken = z.object({
   _: z.string(),
@@ -18,8 +20,8 @@ export type TOAIResumptionToken = z.infer<typeof ZOAIResumptionToken>
 
 const ZOAIResponse = z.object({
   "OAI-PMH": z.object({
-    responseDate: z.object({}),
-    request: z.object({}),
+    responseDate: z.string().datetime(),
+    request: z.unknown(),
     error: ZOAIError.optional(),
     GetRecord: z.object({ record: z.object({}) }).optional(),
     ListMetadataFormats: z.object({
@@ -67,7 +69,7 @@ export async function parseOaiPmhXml (xml: string): Promise<TOAIResponse> {
     normalize: true
   });
   const obj = await parser.parseStringPromise(xml)
-
+   console.log(JSON.stringify(obj,null,2));
   const oaiPmh = ZOAIResponse.passthrough().parse(obj);
   if (!oaiPmh) {
     throw new OaiPmhError('Returned data does not conform to OAI-PMH' , "none");
