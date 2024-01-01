@@ -1,4 +1,4 @@
-import * as xml2js from 'xml2js';;
+import * as xml2js from 'xml2js';
 import { z } from "zod";
 import { OaiPmhError } from './errors'
 

@@ -23,7 +23,7 @@ describe('OaiPmh', () => {
   describe('getRecord()', () => {
     it('should get a record', async () => {
       const oaiPmh = new OaiPmh(arxivBaseUrl as unknown as URL )
-      const res = await oaiPmh.getRecord({ identifier: 'oai:arXiv.org:1412.8544', metadataPrefix:  'arXiv'})
+      await oaiPmh.getRecord({ identifier: 'oai:arXiv.org:1412.8544', metadataPrefix:  'arXiv'})
       // since we're automagically validating the response with zod anyway,
       // there's no need for further test conditions
     }).timeout(15000)
@@ -32,7 +32,7 @@ describe('OaiPmh', () => {
   describe('identify()', () => {
     it('should identify arxiv', async () => {
       const oaiPmh = new OaiPmh(arxivBaseUrl as unknown as URL)
-      const res = await oaiPmh.identify()
+      await oaiPmh.identify()
     }).timeout(15000)
   })
 
