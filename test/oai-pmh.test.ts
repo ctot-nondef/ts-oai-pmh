@@ -26,14 +26,14 @@ describe('OaiPmh', () => {
       const res = await oaiPmh.getRecord({ identifier: 'oai:arXiv.org:1412.8544', metadataPrefix:  'arXiv'})
       // since we're automagically validating the response with zod anyway,
       // there's no need for further test conditions
-    })
+    }).timeout(15000)
   })
 
   describe('identify()', () => {
     it('should identify arxiv', async () => {
       const oaiPmh = new OaiPmh(arxivBaseUrl as unknown as URL)
       const res = await oaiPmh.identify()
-    })
+    }).timeout(15000)
   })
 
   describe('listIdentifiers()', function () {
@@ -42,11 +42,14 @@ describe('OaiPmh', () => {
     this.timeout(90000)
 
     it('should list identifiers from arxiv', async () => {
-      const oaiPmh = new Index(arxivBaseUrl)
+      const oaiPmh = new OaiPmh(arxivBaseUrl as unknown as URL, {
+        retry: true
+      })
       const options = {
         metadataPrefix: 'arXiv',
-        from: '2009-01-01',
-        until: '2009-01-02'
+        from: new Date('2009-01-01'),
+        until: new Date('2009-01-02'),
+        set: ''
       }
       const res = []
       for await (const identifier of oaiPmh.listIdentifiers(options)) {
@@ -61,7 +64,7 @@ describe('OaiPmh', () => {
     })
 
     it('should list identifiers with resumption token from exlibris', async () => {
-      const oaiPmh = new Index(exlibrisBaseUrl)
+      const oaiPmh = new OaiPmh(exlibrisBaseUrl as unknown as URL)
       const options = {
         metadataPrefix: 'marc21',
         set: 'oai_komplett',
@@ -81,7 +84,7 @@ describe('OaiPmh', () => {
     })
 
     it('should list identifiers with resumption token from gulbenkian', async () => {
-      const oaiPmh = new Index(gulbenkianBaseUrl)
+      const oaiPmh = new OaiPmh(gulbenkianBaseUrl as unknown as URL)
       const options = {
         metadataPrefix: 'oai_dc',
         from: '2016-01-01',

@@ -57,7 +57,7 @@ export class OaiPmh implements IOAIHarvesterInterface {
           'User-Agent': this.options.userAgent
         }
       })
-
+      console.log(res);
       if (res.status === 503 && this.options.retry) {
         const retryAfter = res.headers['retry-after']
 

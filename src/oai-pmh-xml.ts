@@ -36,10 +36,10 @@ const ZOAIResponse = z.object({
         baseURL: z.string().url(),
         protocolVersion: z.string(),
         adminEmail: z.string().email(),
-        earliestDatestamp: z.string().datetime(),
+        earliestDatestamp: z.string(),
         deletedRecord: z.enum(["no", "persistent", "transient"]),
         granularity: z.enum(["YYYY-MM-DD", "YYYY-MM-DDThh:mm:ssZ"]),
-        compression: z.string(),
+        compression: z.string().optional(),
         description: z.any(),
     }).optional(),
     ListSets: z.object({
@@ -69,7 +69,6 @@ export async function parseOaiPmhXml (xml: string): Promise<TOAIResponse> {
     normalize: true
   });
   const obj = await parser.parseStringPromise(xml)
-   console.log(JSON.stringify(obj,null,2));
   const oaiPmh = ZOAIResponse.passthrough().parse(obj);
   if (!oaiPmh) {
     throw new OaiPmhError('Returned data does not conform to OAI-PMH' , "none");
