@@ -45,14 +45,16 @@ const ZOAIResponse = z.object({
         description: z.any(),
     }).optional(),
     ListSets: z.object({
-      resumptionToken: ZOAIResumptionToken,
+      set: z.array(z.unknown()),
+      resumptionToken: ZOAIResumptionToken.optional(),
     }).optional(),
     ListIdentifiers: z.object({
       header: z.array(z.unknown()),
       resumptionToken: ZOAIResumptionToken.optional(),
     }).optional(),
     ListRecords: z.object({
-      resumptionToken: ZOAIResumptionToken,
+      record: z.array(z.unknown()).optional(),
+      resumptionToken: ZOAIResumptionToken.optional(),
     }).optional()
   }),
 })
