@@ -46,7 +46,8 @@ const ZOAIResponse = z.object({
       resumptionToken: ZOAIResumptionToken,
     }).optional(),
     ListIdentifiers: z.object({
-      resumptionToken: ZOAIResumptionToken,
+      header: z.array(z.unknown()),
+      resumptionToken: ZOAIResumptionToken.optional(),
     }).optional(),
     ListRecords: z.object({
       resumptionToken: ZOAIResumptionToken,
@@ -69,16 +70,17 @@ export async function parseOaiPmhXml (xml: string): Promise<TOAIResponse> {
     normalize: true
   });
   const obj = await parser.parseStringPromise(xml)
+  console.log(JSON.stringify(obj,null, 2), xml);
   const oaiPmh = ZOAIResponse.passthrough().parse(obj);
   if (!oaiPmh) {
     throw new OaiPmhError('Returned data does not conform to OAI-PMH' , "none");
   }
 
-  const error = oaiPmh["OAI-PMH"].error
+  const error = oaiPmh["OAI-PMH"].error as z.infer<typeof ZOAIError>
   if (error) {
     throw new OaiPmhError(
-      `OAI-PMH provider returned an error: ${error._}`,
-      error.code
+      `OAI-PMH provider returned an error: ${error[0]._}`,
+      error[0].$.code
     )
   }
 

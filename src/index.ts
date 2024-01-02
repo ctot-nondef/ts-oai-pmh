@@ -1,4 +1,4 @@
-import axios,{ AxiosRequestConfig, AxiosResponse } from "axios"
+import axios,{ AxiosRequestConfig, AxiosResponse, AxiosError } from "axios"
 
 import { IOAIHarvesterInterface } from "./IOAIHarvester.interface";
 import { IOAIHarvesterOptionsInterface } from "./IOAIHarvesterOptions.interface";
@@ -45,6 +45,10 @@ export class OaiPmh implements IOAIHarvesterInterface {
    */
   public request = async (requestConfig: AxiosRequestConfig, verb: TOAISingleVerbs | TOAIListVerbs, params: Record<string, any>) => {
     let res: AxiosResponse;
+    //TODO this should be formatted dynamically according to granularity annuncenced
+    //TODO during identify action
+    if (params.from) params.from = params.from.toISOString().split('T')[0];
+    if (params.until) params.until = params.until.toISOString().split('T')[0];
 
     do {
       res = await axios.get (this.baseUrl as unknown as string, {
@@ -56,45 +60,39 @@ export class OaiPmh implements IOAIHarvesterInterface {
           ...(requestConfig.headers || {}),
           'User-Agent': this.options.userAgent
         }
-      })
-      console.log(res);
-      if (res.status === 503 && this.options.retry) {
-        const retryAfter = res.headers['retry-after']
+      }).catch(async (err: AxiosError) => {
+        if (err.response.status === 503 && this.options.retry) {
+          res = err.response;
+          const retryAfter = res.headers['retry-after']
 
-        if (!retryAfter) {
-          throw new OaiPmhError('Status code 503 without Retry-After header.', "none")
-        }
-
-        let retrySeconds: number;
-        if (/^\s*\d+\s*$/.test(retryAfter)) {
-          retrySeconds = parseInt(retryAfter, 10)
-        } else {
-          const retryDate = new Date(retryAfter)
-          if (!retryDate) {
-            throw new OaiPmhError('Status code 503 with invalid Retry-After header.', "none")
+          if (!retryAfter) {
+            throw new OaiPmhError('Status code 503 without Retry-After header.', "none")
           }
-          retrySeconds = Math.floor((retryDate as unknown as number - (new Date() as unknown as number)) / 1000)
-        }
 
-        if (retrySeconds < this.options.retryMin) {
-          retrySeconds = this.options.retryMin
-        }
-        else if (retrySeconds > this.options.retryMax) {
-          retrySeconds = this.options.retryMax
-        }
+          let retrySeconds: number;
+          if (/^\s*\d+\s*$/.test(retryAfter)) {
+            retrySeconds = parseInt(retryAfter, 10)
+          } else {
+            const retryDate = new Date(retryAfter)
+            if (!retryDate) {
+              throw new OaiPmhError('Status code 503 with invalid Retry-After header.', "none")
+            }
+            retrySeconds = Math.floor((retryDate as unknown as number - (new Date() as unknown as number)) / 1000)
+          }
 
-        // wait
-        await sleep(retrySeconds)
-      }
+          if (retrySeconds < this.options.retryMin) {
+            retrySeconds = this.options.retryMin
+          }
+          else if (retrySeconds > this.options.retryMax) {
+            retrySeconds = this.options.retryMax
+          }
+
+          // wait
+          await sleep(retrySeconds)
+          return res;
+        }
+      })
     } while (res.status === 503 && this.options.retry)
-
-    if (res.status !== 200) {
-      throw new OaiPmhError(
-        `Unexpected status code ${res.status} (expected 200).`,
-          "none"
-      )
-    }
-
     return res
   }
 

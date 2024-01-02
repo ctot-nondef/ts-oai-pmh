@@ -7,7 +7,7 @@ export interface IOAIListIdentifiersRequestParamsInterface {
     metadataPrefix: string;
     from: Date;
     until: Date;
-    set: string;
+    set?: string;
 }
 
 export interface IOAIListMetadataFormatsRequestParamsInterface {
@@ -18,5 +18,5 @@ export interface IOAIListRecordsRequestParamsInterface {
     metadataPrefix: string;
     from: Date;
     until: Date;
-    set: string;
+    set?: string;
 }
