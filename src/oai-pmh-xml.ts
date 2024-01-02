@@ -2,12 +2,12 @@ import * as xml2js from 'xml2js';
 import { z } from "zod";
 import { OaiPmhError } from './errors'
 
-const ZOAIError = z.array(z.object({
+const ZOAIError = z.object({
   "$": z.object({
     code: z.enum(["cannotDisseminateFormat", "idDoesNotExist", "badArgument", "badVerb", "noMetadataFormats", "noRecordsMatch", "badResumptionToken", "noSetHierarchy"]),
   }),
   _: z.string()
-}))
+})
 
 const ZOAIResumptionToken = z.object({
   _: z.string().optional(),
@@ -27,11 +27,11 @@ const ZOAIResponse = z.object({
     error: ZOAIError.optional(),
     GetRecord: z.object({ record: z.object({}) }).optional(),
     ListMetadataFormats: z.object({
-      metadataFormat: z.object({
-        metadataPrefix: z.string(),
-        schema: z.string().url(),
-        metadataNamespace: z.string().url()
-      })
+      metadataFormat: z.array(z.object({
+        metadataPrefix: z.object( { _:z.string()}),
+        schema: z.object( { _:z.string().url()}),
+        metadataNamespace: z.object( { _:z.string().url()})
+      }))
     }).optional(),
     Identify: z.object({
         repositoryName: z.object( { _: z.string()}),
@@ -81,8 +81,8 @@ export async function parseOaiPmhXml (xml: string): Promise<TOAIResponse> {
   const error = oaiPmh["OAI-PMH"].error as z.infer<typeof ZOAIError>
   if (error) {
     throw new OaiPmhError(
-      `OAI-PMH provider returned an error: ${error[0]._}`,
-      error[0].$.code
+      `OAI-PMH provider returned an error: ${error._}`,
+      error.$.code
     )
   }
 

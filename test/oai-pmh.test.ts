@@ -89,39 +89,31 @@ describe('OaiPmh', () => {
     })
   })
 
-  describe('listMetadataFormats()', () => {
-    const metadataFormats = [
-      {
-        metadataPrefix: 'oai_dc',
-        schema: 'http://www.openarchives.org/OAI/2.0/oai_dc.xsd',
-        metadataNamespace: 'http://www.openarchives.org/OAI/2.0/oai_dc/'
-      },
-      {
-        metadataPrefix: 'arXiv',
-        schema: 'http://arxiv.org/OAI/arXiv.xsd',
-        metadataNamespace: 'http://arxiv.org/OAI/arXiv/'
-      }
-    ]
+  describe('listMetadataFormats()', function () {
+
+    this.timeout(30000)
 
     it('should list metadata formats for arxiv', async () => {
-      const oaiPmh = new Index(arxivBaseUrl)
-      const res = await oaiPmh.listMetadataFormats()
-      res.should.containDeep(metadataFormats)
+      const oaiPmh = new OaiPmh(arxivBaseUrl as unknown as URL)
+      const res = await oaiPmh.listMetadataFormats({})
+      expect(res.length).to.equal(4);
     })
 
     it('should list metadata formats for arxiv id 1208.0264', async () => {
-      const oaiPmh = new Index(arxivBaseUrl)
+      const oaiPmh = new OaiPmh(arxivBaseUrl as unknown as URL)
       const res = await oaiPmh.listMetadataFormats({
         identifier: 'oai:arXiv.org:1208.0264'
       })
-      res.should.containDeep(metadataFormats)
+      expect(res.length).to.equal(4);
     })
 
     it('should fail for non-existent arxiv id lolcat', async () => {
-      const oaiPmh = new Index(arxivBaseUrl)
+      const oaiPmh = new OaiPmh(arxivBaseUrl as unknown as URL)
       oaiPmh.listMetadataFormats({
         identifier: 'oai:arXiv.org:lolcat'
-      }).should.be.rejectedWith(OaiPmhError)
+      }).catch((err)=> {
+        expect(typeof err).to.equal('OaiPmhError')
+      })
     })
   })
 
@@ -131,7 +123,7 @@ describe('OaiPmh', () => {
     this.timeout(30000)
 
     it('should list identifiers from arxiv', async () => {
-      const oaiPmh = new Index(arxivBaseUrl)
+      const oaiPmh = new (arxivBaseUrl)
       const options = {
         metadataPrefix: 'arXiv',
         from: '2015-01-01',

@@ -11,7 +11,7 @@ export interface IOAIListIdentifiersRequestParamsInterface {
 }
 
 export interface IOAIListMetadataFormatsRequestParamsInterface {
-    identifier: string;
+    identifier?: string;
 }
 
 export interface IOAIListRecordsRequestParamsInterface {
