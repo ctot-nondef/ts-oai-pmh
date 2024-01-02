@@ -40,7 +40,7 @@ export async function* getOaiListItems (oaiPmh: OaiPmh, verb: TOAIListVerbs, par
   while ((resumptionToken = getResumptionToken(result, result[field].length))) {
     const response: AxiosResponse = await oaiPmh.request({}, verb, { resumptionToken });
     const parsedResponse = await parseOaiPmhXml(response.data)
-    result = parsedResponse[verb]
+    result = parsedResponse["OAI-PMH"][verb]
     for (const item of result[field]) {
       yield item
     }

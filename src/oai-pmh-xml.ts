@@ -73,7 +73,6 @@ export async function parseOaiPmhXml (xml: string): Promise<TOAIResponse> {
     normalize: true
   });
   const obj = await parser.parseStringPromise(xml)
-  console.log(JSON.stringify(obj,null, 2), xml);
   const oaiPmh = ZOAIResponse.passthrough().parse(obj);
   if (!oaiPmh) {
     throw new OaiPmhError('Returned data does not conform to OAI-PMH' , "none");

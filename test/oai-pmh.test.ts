@@ -71,7 +71,7 @@ describe('OaiPmh', () => {
       for await (const identifier of oaiPmh.listIdentifiers(options)) {
         res.push(identifier)
       }
-      expect(res.length).to.equal(110);
+      expect(res.length).to.equal(107);
     })
 
     it('should list identifiers with resumption token from gulbenkian', async () => {
@@ -85,7 +85,7 @@ describe('OaiPmh', () => {
       for await (const identifier of oaiPmh.listIdentifiers(options)) {
         res.push(identifier)
       }
-      expect(res.length).to.equal(154);
+      expect(res.length).to.equal(151);
     })
   })
 
