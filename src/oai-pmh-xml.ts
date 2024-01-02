@@ -10,17 +10,19 @@ const ZOAIError = z.array(z.object({
 }))
 
 const ZOAIResumptionToken = z.object({
-  _: z.string(),
-  expirationDate: z.string().datetime(),
-  completeListSize: z.number().positive(),
-  cursor: z.number().nonnegative()
+  _: z.string().optional(),
+  expirationDate: z.string().datetime().optional(),
+  completeListSize: z.number().positive().optional(),
+  cursor: z.number().nonnegative().optional()
 })
 
 export type TOAIResumptionToken = z.infer<typeof ZOAIResumptionToken>
 
 const ZOAIResponse = z.object({
   "OAI-PMH": z.object({
-    responseDate: z.string().datetime(),
+    responseDate: z.object({
+      _: z.string().datetime(),
+    }),
     request: z.unknown(),
     error: ZOAIError.optional(),
     GetRecord: z.object({ record: z.object({}) }).optional(),
@@ -32,14 +34,14 @@ const ZOAIResponse = z.object({
       })
     }).optional(),
     Identify: z.object({
-        repositoryName: z.string(),
-        baseURL: z.string().url(),
-        protocolVersion: z.string(),
-        adminEmail: z.string().email(),
-        earliestDatestamp: z.string(),
-        deletedRecord: z.enum(["no", "persistent", "transient"]),
-        granularity: z.enum(["YYYY-MM-DD", "YYYY-MM-DDThh:mm:ssZ"]),
-        compression: z.string().optional(),
+        repositoryName: z.object( { _: z.string()}),
+        baseURL: z.object( { _: z.string().url()}),
+        protocolVersion: z.object( { _: z.string()}),
+        adminEmail: z.object( { _: z.string().email()}),
+        earliestDatestamp: z.object( { _: z.string()}),
+        deletedRecord: z.object( { _: z.enum(["no", "persistent", "transient"])}),
+        granularity: z.object( { _: z.enum(["YYYY-MM-DD", "YYYY-MM-DDThh:mm:ssZ"])}),
+        compression: z.object( { _: z.string()}).optional(),
         description: z.any(),
     }).optional(),
     ListSets: z.object({
@@ -65,6 +67,7 @@ export type TOAIResponse = z.infer<typeof ZOAIResponse>
  */
 export async function parseOaiPmhXml (xml: string): Promise<TOAIResponse> {
   const parser = new xml2js.Parser({
+    explicitCharkey: true,
     explicitArray: false,
     trim: true,
     normalize: true
