@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "postbuild": "cp package*.json dist && cd dist && npm ci --omit=dev",
+    "postbuild": "cp package*.json dist && cd dist && pnpm install --omit=dev",
     "test": "nyc --reporter=lcov mocha --exit --require ts-node/register test/*.ts",
     "coverage:badge": "coverage-badge-creator",
     "bin": "node dist/bin/index.js",
