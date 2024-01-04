@@ -3,17 +3,13 @@ on:
   push:
 
 jobs:
-  install:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 6.0.2
   test:
     name: Test Application
     runs-on: ubuntu-latest
     steps:
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 6.0.2
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
