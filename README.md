@@ -9,4 +9,23 @@ A TypeScript module for the Open Archives Initiative Protocol for Metadata Harve
 npm install oai-pmh
 ```
 
-documentation and usage coming soon
+# Basic usage
+## As typescript library
+```typescript
+const oaiPmh = new OaiPmh("http://bibsys-network.alma.exlibrisgroup.com/view/oai/47BIBSYS_NETWORK/request" as unknown as URL)
+const options = {
+    metadataPrefix: 'marc21',
+    set: 'oai_komplett',
+    from: new Date('2020-01-01'),
+    until: new Date('2020-01-03')
+}
+const res = []
+for await (const identifier of oaiPmh.listIdentifiers(options)) {
+    res.push(identifier)
+}
+```
+For details see the [documentation](https://ctot-nondef.github.io/ts-oai-pmh/)
+
+## Through CLI
+
+to be done
