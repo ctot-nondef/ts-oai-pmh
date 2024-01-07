@@ -37,7 +37,6 @@
     "@types/lodash": "^4.14.202",
     "chai": "^4.1.2",
     "mocha": "^10.2.0",
-    "coverage-badge-creator": "^1.0.14",
     "nyc": "^15.1.0",
     "ts-node": "4.1.0",
     "tslint": "5.9.1",
