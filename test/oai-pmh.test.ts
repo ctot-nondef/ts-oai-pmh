@@ -1,28 +1,20 @@
 import { expect } from "chai";
 
-import { OaiPmhError } from '../src/errors'
 import { OaiPmh } from '../src'
-import exp = require("node:constants");
 
 const arxivBaseUrl: string = 'http://export.arxiv.org/oai2'
 const exlibrisBaseUrl = 'http://bibsys-network.alma.exlibrisgroup.com/view/oai/47BIBSYS_NETWORK/request'
 const gulbenkianBaseUrl = 'http://arca.igc.gulbenkian.pt/oaiextended/request'
 
-const record = {
-  header: {
-    identifier: 'oai:arXiv.org:1412.8544',
-    datestamp: '2015-01-03',
-    setSpec: 'cs'
-  },
-  metadata: {
-    arXiv: {
-      created: '2014-12-29',
-      id: '1412.8544'
-    }
-  }
-}
-
 describe('OaiPmh', () => {
+  describe('setBaseUrl()', () => {
+    it('should set the instances baseUrl', async () => {
+      const oaiPmh = new OaiPmh(arxivBaseUrl as unknown as URL )
+      oaiPmh.setBaseUrl(exlibrisBaseUrl as unknown as URL)
+      expect(oaiPmh.baseUrl.toString()).to.equal(exlibrisBaseUrl);
+    })
+  })
+
   describe('getRecord()', () => {
     it('should get a record', async () => {
       const oaiPmh = new OaiPmh(arxivBaseUrl as unknown as URL )
