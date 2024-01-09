@@ -1,13 +1,13 @@
 export enum EOAISingleVerbsEnum {
-    "GetRecord",
-    "Identify",
-    "ListMetadataFormats",
+	"GetRecord",
+	"Identify",
+	"ListMetadataFormats",
 }
 
 export enum EOAIListVerbsEnum {
-    "ListIdentifiers",
-    "ListRecords",
-    "ListSets"
+	"ListIdentifiers",
+	"ListRecords",
+	"ListSets",
 }
 
 export type TOAISingleVerbs = keyof typeof EOAISingleVerbsEnum;
