@@ -6,3 +6,4 @@ dist
 docs
 .idea
 qodana.yaml
+.eslintcache
