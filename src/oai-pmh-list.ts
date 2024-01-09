@@ -15,7 +15,7 @@ function getResumptionToken (result: { resumptionToken?: TOAIResumptionToken[] }
   if (
     cursor &&
     completeListSize &&
-    cursor + listSize >= completeListSize
+    cursor[0] + listSize >= completeListSize[0]
   ) return undefined
 
   return token[0]._
