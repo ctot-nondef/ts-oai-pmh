@@ -4,3 +4,4 @@ dist
 .nyc_output
 .pnpm-store
 docs
+.idea
