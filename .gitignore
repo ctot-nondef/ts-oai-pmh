@@ -5,3 +5,4 @@ dist
 .pnpm-store
 docs
 .idea
+qodana.yaml
