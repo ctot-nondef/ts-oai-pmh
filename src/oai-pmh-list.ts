@@ -4,21 +4,21 @@ import { parseOaiPmhXml } from './oai-pmh-xml'
 import {TOAIListVerbs} from "./EOAIVerbs.enum";
 import {TOAIResumptionToken} from "./oai-pmh-xml";
 import {AxiosResponse} from "axios";
-function getResumptionToken (result: { resumptionToken?: TOAIResumptionToken }, listSize: number) {
+function getResumptionToken (result: { resumptionToken?: TOAIResumptionToken[] }, listSize: number) {
   const token = result.resumptionToken
   if (!token) return undefined
 
   if (typeof token === 'string') return token
 
-  const cursor = token.cursor;
-  const completeListSize = token.completeListSize;
+  const cursor = token[0].cursor;
+  const completeListSize = token[0].completeListSize;
   if (
     cursor &&
     completeListSize &&
     cursor + listSize >= completeListSize
   ) return undefined
 
-  return token._
+  return token[0]._
 }
 
 /**
@@ -32,15 +32,15 @@ export async function* getOaiListItems (oaiPmh: OaiPmh, verb: TOAIListVerbs, par
   const initialResponse = await oaiPmh.request({}, verb, {...params});
   const initialParsedResponse = await parseOaiPmhXml(initialResponse.data)
   const initialResult = initialParsedResponse["OAI-PMH"][verb]
-  for (const item of initialResult[field]) {
+  for (const item of initialResult[0][field]) {
     yield item
   }
-  let result = initialResult
+  let result = initialResult[0]
   let resumptionToken: string;
   while ((resumptionToken = getResumptionToken(result, result[field].length))) {
     const response: AxiosResponse = await oaiPmh.request({}, verb, { resumptionToken });
     const parsedResponse = await parseOaiPmhXml(response.data)
-    result = parsedResponse["OAI-PMH"][verb]
+    result = parsedResponse["OAI-PMH"][verb][0]
     for (const item of result[field]) {
       yield item
     }

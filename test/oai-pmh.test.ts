@@ -83,15 +83,12 @@ describe('OaiPmh', () => {
   })
 
   describe('listMetadataFormats()', function () {
-
     this.timeout(30000)
-
     it('should list metadata formats for arxiv', async () => {
       const oaiPmh = new OaiPmh(arxivBaseUrl as unknown as URL)
       const res = await oaiPmh.listMetadataFormats({})
       expect(res.length).to.equal(4);
     })
-
     it('should list metadata formats for arxiv id 1208.0264', async () => {
       const oaiPmh = new OaiPmh(arxivBaseUrl as unknown as URL)
       const res = await oaiPmh.listMetadataFormats({
