@@ -117,7 +117,7 @@ export class OaiPmh implements IOAIHarvesterInterface {
     })
 
     const obj = await parseOaiPmhXml(res.data)
-    return obj["OAI-PMH"].GetRecord.record;
+    return obj["OAI-PMH"].GetRecord[0].record;
   }
 
   /**
@@ -138,7 +138,7 @@ export class OaiPmh implements IOAIHarvesterInterface {
         identifier: params.identifier
     })
     const obj = await parseOaiPmhXml(res.data)
-    return obj["OAI-PMH"].ListMetadataFormats.metadataFormat;
+    return obj["OAI-PMH"].ListMetadataFormats[0].metadataFormat;
   }
 
   /**
