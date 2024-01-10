@@ -4,7 +4,9 @@
 		"target": "es6",
 		"declaration": true,
 		"outDir": "./dist",
-		"allowSyntheticDefaultImports": true
+		"allowSyntheticDefaultImports": true,
+		"strictNullChecks": true,
+		"lib": ["es6"]
 	},
-	"include": ["src/**/*", "bin/**/*"]
+	"include": ["src/**/*", "bin/**/*", "test/**/*"]
 }
