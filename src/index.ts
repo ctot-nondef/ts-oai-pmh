@@ -79,7 +79,7 @@ export class OaiPmh implements IOAIHarvesterInterface {
 							retrySeconds = parseInt(retryAfter, 10);
 						} else {
 							const retryDate = new Date(retryAfter);
-							if (!retryDate) {
+							if (Number.isNaN(retryDate)) {
 								throw new OaiPmhError("Status code 503 with invalid Retry-After header.", "none");
 							}
 							retrySeconds = Math.floor(
