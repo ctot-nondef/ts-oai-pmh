@@ -69,7 +69,7 @@ program
 	.action((baseUrl, _options) =>
 		wrapAsync(async () => {
 			const options = pick(_options, "identifier");
-			const oaiPmh = new OaiPmh(baseUrl);
+			const oaiPmh = new OaiPmh(baseUrl as URL);
 			const result = await oaiPmh.listMetadataFormats(options);
 			printJson(result);
 		}),
@@ -84,7 +84,7 @@ program
 	.action((baseUrl, _options) =>
 		wrapAsync(async () => {
 			const options = pick(_options, "metadataPrefix", "from", "until", "set");
-			const oaiPmh = new OaiPmh(baseUrl);
+			const oaiPmh = new OaiPmh(baseUrl as URL);
 			await printList(oaiPmh.listRecords(options));
 		}),
 	);
