@@ -9,6 +9,7 @@ import type { IOAIListRecordsRequestParamsInterface } from "./IOAIRequestParams.
 import { getOaiListItems } from "./oai-pmh-list";
 import { parseOaiPmhXml } from "./oai-pmh-xml";
 import { sleep } from "./utils";
+import {TOAIGetRecordsResponse, TOAIIdentifyResponse, TOAIListMetadataFormatsResponse} from "./TOAIResponse.type";
 
 /**
  * @implements IOAIHarvesterInterface
@@ -45,30 +46,26 @@ export class OaiPmh implements IOAIHarvesterInterface {
 	public request = async (
 		requestConfig: AxiosRequestConfig,
 		verb: TOAIListVerbs | TOAISingleVerbs,
-		params: Record<string, any>,
+		params: Record<string, string | undefined>,
 	) => {
-		let res: AxiosResponse;
-		//TODO this should be formatted dynamically according to granularity annuncenced
-		//TODO during identify action
-		if (params.from) params.from = params.from.toISOString().split("T")[0];
-		if (params.until) params.until = params.until.toISOString().split("T")[0];
-
+		let res: AxiosResponse<string, string>;
 		do {
+			// @ts-expect-error - any other response will be caught by catch
 			res = await axios
-				.get(this.baseUrl as unknown as string, {
+				.get(this.baseUrl.toString(), {
 					params: {
 						verb,
 						...params,
 					},
 					headers: {
-						...(requestConfig.headers || {}),
+						...(requestConfig.headers ?? {}),
 						"User-Agent": this.options.userAgent,
 					},
 				})
 				.catch(async (err: AxiosError) => {
-					if (err.response.status === 503 && this.options.retry) {
-						res = err.response;
-						const retryAfter = res.headers["retry-after"];
+					if (err.response && err.response.status === 503 && this.options.retry) {
+						res = err.response as AxiosResponse<string, string>;
+						const retryAfter = res.headers["retry-after"] as string;
 
 						if (!retryAfter) {
 							throw new OaiPmhError("Status code 503 without Retry-After header.", "none");
@@ -106,10 +103,9 @@ export class OaiPmh implements IOAIHarvesterInterface {
 	 * retrieve information about a repository
 	 * https://www.openarchives.org/OAI/openarchivesprotocol.html#Identify
 	 */
-	public identify = async () => {
+	public identify = async (): Promise<TOAIIdentifyResponse> => {
 		const res = await this.request({}, "Identify", {});
-		const obj = await parseOaiPmhXml(res.data);
-		return obj["OAI-PMH"].Identify;
+		return await parseOaiPmhXml(res.data, "Identify") as TOAIIdentifyResponse;
 	};
 
 	/**
@@ -117,14 +113,25 @@ export class OaiPmh implements IOAIHarvesterInterface {
 	 * https://www.openarchives.org/OAI/openarchivesprotocol.html#GetRecord
 	 * @param params
 	 */
-	public getRecord = async (params: RequestParamInterfaces.IOAIGetRecordRequestParamsInterface) => {
+	public getRecord = async (params: RequestParamInterfaces.IOAIGetRecordRequestParamsInterface): Promise<TOAIGetRecordsResponse> => {
 		const res = await this.request({}, "GetRecord", {
 			...params,
 		});
-
-		const obj = await parseOaiPmhXml(res.data);
-		return obj["OAI-PMH"].GetRecord[0].record;
+		return await parseOaiPmhXml(res.data, "GetRecord") as TOAIGetRecordsResponse;
 	};
+
+	/**
+	 * retrieve the metadata formats available from a repository for a specific record
+	 * @param params
+	 */
+	async listMetadataFormats(
+		params: RequestParamInterfaces.IOAIListMetadataFormatsRequestParamsInterface,
+	): Promise<TOAIListMetadataFormatsResponse> {
+		const res = await this.request({}, "ListMetadataFormats", {
+			identifier: params.identifier,
+		});
+		return await parseOaiPmhXml(res.data, "ListMetadataFormats") as TOAIListMetadataFormatsResponse;
+	}
 
 	/**
 	 * an abbreviated form of ListRecords, retrieving only headers rather than records
@@ -134,22 +141,13 @@ export class OaiPmh implements IOAIHarvesterInterface {
 	public listIdentifiers = (
 		params: RequestParamInterfaces.IOAIListIdentifiersRequestParamsInterface,
 	) => {
-		return getOaiListItems(this, "ListIdentifiers", { ...params }, "header");
+		const parsedParams = {
+			...params,
+			from: params.from.toISOString().split("T")[0],
+			until: params.until.toISOString().split("T")[0],
+		};
+		return getOaiListItems(this, "ListIdentifiers", { ...parsedParams }, "header");
 	};
-
-	/**
-	 * retrieve the metadata formats available from a repository for a specific record
-	 * @param params
-	 */
-	async listMetadataFormats(
-		params: RequestParamInterfaces.IOAIListMetadataFormatsRequestParamsInterface,
-	) {
-		const res = await this.request({}, "ListMetadataFormats", {
-			identifier: params.identifier,
-		});
-		const obj = await parseOaiPmhXml(res.data);
-		return obj["OAI-PMH"].ListMetadataFormats[0].metadataFormat;
-	}
 
 	/**
 	 * harvest records from a repository
@@ -157,7 +155,12 @@ export class OaiPmh implements IOAIHarvesterInterface {
 	 * @param params
 	 */
 	listRecords(params: IOAIListRecordsRequestParamsInterface) {
-		return getOaiListItems(this, "ListRecords", { ...params }, "record");
+		const parsedParams = {
+			...params,
+			from: params.from.toISOString().split("T")[0],
+			until: params.until.toISOString().split("T")[0],
+		};
+		return getOaiListItems(this, "ListRecords", { ...parsedParams }, "record");
 	}
 
 	/**

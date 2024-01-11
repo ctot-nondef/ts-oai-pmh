@@ -3,14 +3,15 @@ import { Command } from "commander";
 import { pick } from "lodash";
 
 import { OaiPmh } from "../src";
+import type { IOAIGetRecordRequestParamsInterface } from "../src/IOAIRequestParams.interface";
 
 const program = new Command();
 program.version("0.0.1");
 
-async function wrapAsync(fun) {
+async function wrapAsync(fun: () => Promise<void>) {
 	fun().then(
 		() => process.exit(0),
-		(err: ) => {
+		(err: Error) => {
 			process.stderr.write(`${err.toString()}\n`);
 			process.exit(1);
 		},
@@ -31,9 +32,9 @@ program
 	.command("get-record <baseUrl>")
 	.option("-i, --identifier <id>")
 	.option("-p, --metadata-prefix <prefix>")
-	.action((baseUrl, options) =>
+	.action((baseUrl, options: IOAIGetRecordRequestParamsInterface) =>
 		wrapAsync(async () => {
-			const oaiPmh = new OaiPmh(baseUrl);
+			const oaiPmh = new OaiPmh(baseUrl as unknown as URL);
 			const result = await oaiPmh.getRecord({ ...options });
 			printJson(result);
 		}),

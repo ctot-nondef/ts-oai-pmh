@@ -1,14 +1,17 @@
-import type { AxiosResponse } from "axios";
-
-import type { TOAIListVerbs } from "./EOAIVerbs.enum";
+import type {TOAIListVerbs} from "./EOAIVerbs.enum";
 import type { OaiPmh } from "./index";
-import { parseOaiPmhXml, type TOAIResumptionToken } from "./oai-pmh-xml";
+import { parseOaiPmhXml } from "./oai-pmh-xml";
+import type {
+	TOAIListIdenfifiersResponse,
+	TOAIListRecordsResponse,
+	TOAIListSetsResponse
+} from "./TOAIResponse.type";
 
 function getResumptionToken(
-	result: { resumptionToken?: Array<TOAIResumptionToken> },
+	result: TOAIListIdenfifiersResponse | TOAIListRecordsResponse | TOAIListSetsResponse,
 	listSize: number,
 ) {
-	const token = result.resumptionToken;
+	const token = result[0].resumptionToken;
 	if (!token) return undefined;
 
 	if (typeof token === "string") return token;
@@ -30,21 +33,20 @@ function getResumptionToken(
 export async function* getOaiListItems(
 	oaiPmh: OaiPmh,
 	verb: TOAIListVerbs,
-	params: Record<string, any>,
+	params: Record<string, string | undefined>,
 	field: string,
 ) {
 	const initialResponse = await oaiPmh.request({}, verb, { ...params });
-	const initialParsedResponse = await parseOaiPmhXml(initialResponse.data);
-	const initialResult = initialParsedResponse["OAI-PMH"][verb];
-	for (const item of initialResult[0][field]) {
+	const initialParsedResponse = await parseOaiPmhXml(initialResponse.data, verb) as TOAIListIdenfifiersResponse | TOAIListRecordsResponse | TOAIListSetsResponse;
+	for (const item of initialParsedResponse[0][field]) {
 		yield item;
 	}
-	let result = initialResult[0];
-	let resumptionToken: string;
-	while ((resumptionToken = getResumptionToken(result, result[field].length))) {
-		const response: AxiosResponse = await oaiPmh.request({}, verb, { resumptionToken });
-		const parsedResponse = await parseOaiPmhXml(response.data);
-		result = parsedResponse["OAI-PMH"][verb][0];
+	let result = initialParsedResponse;
+	let resumptionToken: string | undefined;
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+	while ((resumptionToken = getResumptionToken(result, result[0][field].length as number))) {
+		const response = await oaiPmh.request({}, verb, { resumptionToken });
+		result = await parseOaiPmhXml(response.data, verb) as TOAIListIdenfifiersResponse | TOAIListRecordsResponse | TOAIListSetsResponse;
 		for (const item of result[field]) {
 			yield item;
 		}
