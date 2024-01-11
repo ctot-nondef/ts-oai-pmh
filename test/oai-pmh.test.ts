@@ -2,14 +2,14 @@ import { expect } from "chai";
 
 import { OaiPmh } from "../src";
 
-const arxivBaseUrl: string = "http://export.arxiv.org/oai2";
+const arxivBaseUrl = "http://export.arxiv.org/oai2";
 const exlibrisBaseUrl =
 	"http://bibsys-network.alma.exlibrisgroup.com/view/oai/47BIBSYS_NETWORK/request";
 const gulbenkianBaseUrl = "http://arca.igc.gulbenkian.pt/oaiextended/request";
 
 describe("OaiPmh", () => {
 	describe("setBaseUrl()", () => {
-		it("should set the instances baseUrl", async () => {
+		it("should set the instances baseUrl", () => {
 			const oaiPmh = new OaiPmh(arxivBaseUrl as unknown as URL);
 			oaiPmh.setBaseUrl(exlibrisBaseUrl as unknown as URL);
 			expect(oaiPmh.baseUrl.toString()).to.equal(exlibrisBaseUrl);
@@ -48,7 +48,7 @@ describe("OaiPmh", () => {
 			};
 			const res = [];
 			for await (const identifier of oaiPmh.listIdentifiers(options)) {
-				res.push(identifier);
+				res.push(identifier as never);
 			}
 			expect(res.length).to.equal(83);
 		});
@@ -63,7 +63,7 @@ describe("OaiPmh", () => {
 			};
 			const res = [];
 			for await (const identifier of oaiPmh.listIdentifiers(options)) {
-				res.push(identifier);
+				res.push(identifier as never);
 			}
 			expect(res.length).to.equal(106);
 		});
@@ -77,7 +77,7 @@ describe("OaiPmh", () => {
 			};
 			const res = [];
 			for await (const identifier of oaiPmh.listIdentifiers(options)) {
-				res.push(identifier);
+				res.push(identifier as never);
 			}
 			expect(res.length).to.equal(151);
 		});
@@ -104,7 +104,7 @@ describe("OaiPmh", () => {
 				.listMetadataFormats({
 					identifier: "oai:arXiv.org:lolcat",
 				})
-				.catch((err) => {
+				.catch((err: Error) => {
 					expect(err.name).to.equal("OaiPmhError");
 				});
 		});
@@ -124,7 +124,7 @@ describe("OaiPmh", () => {
 			};
 			const res = [];
 			for await (const record of oaiPmh.listRecords(options)) {
-				res.push(record);
+				res.push(record as never);
 			}
 			expect(res.length).to.equal(2);
 		});
@@ -135,7 +135,7 @@ describe("OaiPmh", () => {
 			const oaiPmh = new OaiPmh(arxivBaseUrl as unknown as URL);
 			const res = [];
 			for await (const set of oaiPmh.listSets()) {
-				res.push(set);
+				res.push(set as never);
 			}
 			expect(res.length).to.equal(21);
 		});

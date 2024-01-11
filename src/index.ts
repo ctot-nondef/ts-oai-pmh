@@ -8,8 +8,12 @@ import type * as RequestParamInterfaces from "./IOAIRequestParams.interface";
 import type { IOAIListRecordsRequestParamsInterface } from "./IOAIRequestParams.interface";
 import { getOaiListItems } from "./oai-pmh-list";
 import { parseOaiPmhXml } from "./oai-pmh-xml";
+import type {
+	TOAIGetRecordsResponse,
+	TOAIIdentifyResponse,
+	TOAIListMetadataFormatsResponse,
+} from "./TOAIResponse.type";
 import { sleep } from "./utils";
-import {TOAIGetRecordsResponse, TOAIIdentifyResponse, TOAIListMetadataFormatsResponse} from "./TOAIResponse.type";
 
 /**
  * @implements IOAIHarvesterInterface
@@ -105,7 +109,7 @@ export class OaiPmh implements IOAIHarvesterInterface {
 	 */
 	public identify = async (): Promise<TOAIIdentifyResponse> => {
 		const res = await this.request({}, "Identify", {});
-		return await parseOaiPmhXml(res.data, "Identify") as TOAIIdentifyResponse;
+		return (await parseOaiPmhXml(res.data, "Identify")) as TOAIIdentifyResponse;
 	};
 
 	/**
@@ -113,11 +117,13 @@ export class OaiPmh implements IOAIHarvesterInterface {
 	 * https://www.openarchives.org/OAI/openarchivesprotocol.html#GetRecord
 	 * @param params
 	 */
-	public getRecord = async (params: RequestParamInterfaces.IOAIGetRecordRequestParamsInterface): Promise<TOAIGetRecordsResponse> => {
+	public getRecord = async (
+		params: RequestParamInterfaces.IOAIGetRecordRequestParamsInterface,
+	): Promise<TOAIGetRecordsResponse> => {
 		const res = await this.request({}, "GetRecord", {
 			...params,
 		});
-		return await parseOaiPmhXml(res.data, "GetRecord") as TOAIGetRecordsResponse;
+		return (await parseOaiPmhXml(res.data, "GetRecord")) as TOAIGetRecordsResponse;
 	};
 
 	/**
@@ -130,7 +136,10 @@ export class OaiPmh implements IOAIHarvesterInterface {
 		const res = await this.request({}, "ListMetadataFormats", {
 			identifier: params.identifier,
 		});
-		return await parseOaiPmhXml(res.data, "ListMetadataFormats") as TOAIListMetadataFormatsResponse;
+		return (await parseOaiPmhXml(
+			res.data,
+			"ListMetadataFormats",
+		)) as TOAIListMetadataFormatsResponse;
 	}
 
 	/**

@@ -1,10 +1,10 @@
-import type {TOAIListVerbs} from "./EOAIVerbs.enum";
+import type { TOAIListVerbs } from "./EOAIVerbs.enum";
 import type { OaiPmh } from "./index";
 import { parseOaiPmhXml } from "./oai-pmh-xml";
 import type {
 	TOAIListIdenfifiersResponse,
 	TOAIListRecordsResponse,
-	TOAIListSetsResponse
+	TOAIListSetsResponse,
 } from "./TOAIResponse.type";
 
 function getResumptionToken(
@@ -37,7 +37,10 @@ export async function* getOaiListItems(
 	field: string,
 ) {
 	const initialResponse = await oaiPmh.request({}, verb, { ...params });
-	const initialParsedResponse = await parseOaiPmhXml(initialResponse.data, verb) as TOAIListIdenfifiersResponse | TOAIListRecordsResponse | TOAIListSetsResponse;
+	const initialParsedResponse = (await parseOaiPmhXml(initialResponse.data, verb)) as
+		| TOAIListIdenfifiersResponse
+		| TOAIListRecordsResponse
+		| TOAIListSetsResponse;
 	for (const item of initialParsedResponse[0][field]) {
 		yield item;
 	}
@@ -46,7 +49,10 @@ export async function* getOaiListItems(
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 	while ((resumptionToken = getResumptionToken(result, result[0][field].length as number))) {
 		const response = await oaiPmh.request({}, verb, { resumptionToken });
-		result = await parseOaiPmhXml(response.data, verb) as TOAIListIdenfifiersResponse | TOAIListRecordsResponse | TOAIListSetsResponse;
+		result = (await parseOaiPmhXml(response.data, verb)) as
+			| TOAIListIdenfifiersResponse
+			| TOAIListRecordsResponse
+			| TOAIListSetsResponse;
 		for (const item of result[field]) {
 			yield item;
 		}

@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import * as xml2js from "xml2js";
 
-import type { TOAIListVerbs, TOAISingleVerbs} from "./EOAIVerbs.enum";
+import type { TOAIListVerbs, TOAISingleVerbs } from "./EOAIVerbs.enum";
 import { OaiPmhError } from "./errors";
 import {
 	type TOAIGetRecordsResponse,
 	type TOAIIdentifyResponse,
-	type TOAIListIdenfifiersResponse, type TOAIListMetadataFormatsResponse,
+	type TOAIListIdenfifiersResponse,
+	type TOAIListMetadataFormatsResponse,
 	type TOAIListRecordsResponse,
-	type TOAIListSetsResponse, ZOAIResponse
+	type TOAIListSetsResponse,
+	ZOAIResponse,
 } from "./TOAIResponse.type";
-
 
 /**
  * parses an XML response into JSON and checks for the availability of basic properties
@@ -19,7 +20,17 @@ import {
  * @param verb
  * @returns {Promise<any>}
  */
-export async function parseOaiPmhXml(xml: string, verb: TOAIListVerbs | TOAISingleVerbs): Promise<TOAIGetRecordsResponse | TOAIIdentifyResponse | TOAIListIdenfifiersResponse | TOAIListMetadataFormatsResponse | TOAIListRecordsResponse | TOAIListSetsResponse> {
+export async function parseOaiPmhXml(
+	xml: string,
+	verb: TOAIListVerbs | TOAISingleVerbs,
+): Promise<
+	| TOAIGetRecordsResponse
+	| TOAIIdentifyResponse
+	| TOAIListIdenfifiersResponse
+	| TOAIListMetadataFormatsResponse
+	| TOAIListRecordsResponse
+	| TOAIListSetsResponse
+> {
 	const parser = new xml2js.Parser({
 		explicitCharkey: true,
 		explicitArray: true,
