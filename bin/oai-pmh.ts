@@ -8,6 +8,7 @@ import type { IOAIGetRecordRequestParamsInterface } from "../src/IOAIRequestPara
 const program = new Command();
 program.version("0.0.1");
 
+// eslint-disable-next-line @typescript-eslint/require-await
 async function wrapAsync(fun: () => Promise<void>) {
 	fun().then(
 		() => process.exit(0),
@@ -42,7 +43,7 @@ program
 
 program.command("identify <baseUrl>").action((baseUrl) =>
 	wrapAsync(async () => {
-		const oaiPmh = new OaiPmh(baseUrl);
+		const oaiPmh = new OaiPmh(baseUrl as URL);
 		const result = await oaiPmh.identify();
 		printJson(result);
 	}),
@@ -57,7 +58,7 @@ program
 	.action((baseUrl, _options) =>
 		wrapAsync(async () => {
 			const options = pick(_options, "metadataPrefix", "from", "until", "set");
-			const oaiPmh = new OaiPmh(baseUrl);
+			const oaiPmh = new OaiPmh(baseUrl as URL);
 			await printList(oaiPmh.listIdentifiers(options));
 		}),
 	);
@@ -90,7 +91,7 @@ program
 
 program.command("list-sets <baseUrl>").action((baseUrl) =>
 	wrapAsync(async () => {
-		const oaiPmh = new OaiPmh(baseUrl);
+		const oaiPmh = new OaiPmh(baseUrl as URL);
 		await printList(oaiPmh.listSets());
 	}),
 );
