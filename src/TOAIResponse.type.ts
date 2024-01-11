@@ -25,6 +25,22 @@ export const ZOAIResumptionToken = z.object({
 export type TOAIResumptionToken = z.infer<typeof ZOAIResumptionToken>;
 
 
+export const ZOAIGetRecordsResponse = z.array(z.object({ record: z.array(z.object({})) }));
+export type TOAIGetRecordsResponse = z.infer<typeof ZOAIGetRecordsResponse>;
+
+export const ZOAIListMetadataFormatsResponse = z
+    .array(
+        z.object({
+            metadataFormat: z.array(
+                z.object({
+                    metadataPrefix: z.array(z.object({ _: z.string() })),
+                    schema: z.array(z.object({ _: z.string().url() })),
+                    metadataNamespace: z.array(z.object({ _: z.string().url() })),
+                }),
+            ),
+        }),
+    )
+export type TOAIListMetadataFormatsResponse = z.infer<typeof ZOAIListMetadataFormatsResponse>;
 
 export const ZOAIIdentifyResponse = z
     .array(
@@ -58,7 +74,7 @@ export const ZOAIListIdenfifiersResponse = z
             resumptionToken: z.array(ZOAIResumptionToken).optional(),
         }),
     )
-export type ZOAIListIdenfifiersResponse = z.infer<typeof ZOAIListIdenfifiersResponse>;
+export type TOAIListIdenfifiersResponse = z.infer<typeof ZOAIListIdenfifiersResponse>;
 
 export const ZOAIListRecordsResponse = z
     .array(
@@ -79,20 +95,8 @@ export const ZOAIResponse = z.object({
         ),
         request: z.unknown(),
         error: z.array(ZOAIError).optional(),
-        GetRecord: z.array(z.object({ record: z.array(z.object({})) })).optional(),
-        ListMetadataFormats: z
-            .array(
-                z.object({
-                    metadataFormat: z.array(
-                        z.object({
-                            metadataPrefix: z.array(z.object({ _: z.string() })),
-                            schema: z.array(z.object({ _: z.string().url() })),
-                            metadataNamespace: z.array(z.object({ _: z.string().url() })),
-                        }),
-                    ),
-                }),
-            )
-            .optional(),
+        GetRecord: ZOAIGetRecordsResponse.optional(),
+        ListMetadataFormats: ZOAIListMetadataFormatsResponse.optional(),
         Identify: ZOAIIdentifyResponse.optional(),
         ListSets: ZOAIListSetsResponse.optional(),
         ListIdentifiers: ZOAIListIdenfifiersResponse.optional(),
