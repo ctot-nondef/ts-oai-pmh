@@ -8,7 +8,6 @@ export class OaiPmhError extends Error {
 		this.name = this.constructor.name;
 		this.message = message;
 		this.code = code;
-		// @ts-expect-error
-		Error.captureStackTrace(this, this.constructor.name);
+		Error.captureStackTrace(this);
 	}
 }
