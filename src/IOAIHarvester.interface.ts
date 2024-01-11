@@ -3,7 +3,7 @@ import type { IOAIHarvesterOptionsInterface } from "./IOAIHarvesterOptions.inter
 /**
  * @interface
  */
-export interface IOAIHarvesterInterface extends Record<string, any> {
+export interface IOAIHarvesterInterface {
 	baseUrl: URL;
 	options: IOAIHarvesterOptionsInterface;
 }

@@ -1,4 +1,4 @@
-export interface IOAIHarvesterOptionsInterface extends Record<string, any> {
+export interface IOAIHarvesterOptionsInterface {
 	userAgent: string;
 	retry: boolean;
 	retryMin: number;
