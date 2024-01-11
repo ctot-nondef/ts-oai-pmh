@@ -53,7 +53,7 @@ export async function* getOaiListItems(
 			| TOAIListIdenfifiersResponse
 			| TOAIListRecordsResponse
 			| TOAIListSetsResponse;
-		for (const item of result[field]) {
+		for (const item of result[0][field]) {
 			yield item;
 		}
 	}

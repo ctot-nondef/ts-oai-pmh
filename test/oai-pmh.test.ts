@@ -88,14 +88,14 @@ describe("OaiPmh", () => {
 		it("should list metadata formats for arxiv", async () => {
 			const oaiPmh = new OaiPmh(arxivBaseUrl as unknown as URL);
 			const res = await oaiPmh.listMetadataFormats({});
-			expect(res.length).to.equal(4);
+			expect(res[0].metadataFormat.length).to.equal(4);
 		});
 		it("should list metadata formats for arxiv id 1208.0264", async () => {
 			const oaiPmh = new OaiPmh(arxivBaseUrl as unknown as URL);
 			const res = await oaiPmh.listMetadataFormats({
 				identifier: "oai:arXiv.org:1208.0264",
 			});
-			expect(res.length).to.equal(4);
+			expect(res[0].metadataFormat.length).to.equal(4);
 		});
 
 		it("should fail for non-existent arxiv id lolcat", async () => {
