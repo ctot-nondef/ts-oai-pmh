@@ -1,6 +1,6 @@
 {
 	"name": "@nondef/ts-oai-pmh",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "OAI-PMH harvester module for nodejs - typescript refactor",
 	"main": "dist/index.js",
 	"scripts": {
