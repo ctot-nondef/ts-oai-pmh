@@ -8,5 +8,5 @@
 		"strictNullChecks": true,
 		"lib": ["es6"]
 	},
-	"include": ["src/**/*", "bin/**/*", "test/**/*"]
+	"include": ["src/index.ts", "bin/oai-pmh.ts"]
 }
