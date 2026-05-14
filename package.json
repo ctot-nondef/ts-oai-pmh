@@ -17,7 +17,7 @@
     "url": "git+https://github.com/ctot-nondef/oai-pmh.git"
   },
   "bin": {
-    "oai-pmh": "./dist/bin/oai-pmh.js"
+    "oai-pmh": "dist/bin/oai-pmh.js"
   },
   "files": [
     "dist",
