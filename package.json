@@ -36,7 +36,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "tsc -p tsconfig.test.json && node --test \"dist-test/test/**/*.test.js\"",
+    "test": "pnpm run build && tsc -p tsconfig.test.json && node --test \"dist-test/test/**/*.test.js\"",
     "bin": "node dist/bin/oai-pmh.js",
     "document": "typedoc src/index.ts",
     "format:check": "oxfmt --check .",

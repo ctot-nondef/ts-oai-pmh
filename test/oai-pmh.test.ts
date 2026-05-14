@@ -1,8 +1,22 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import { test } from "node:test";
 
-import { OaiPmh, OaiPmhError } from "../src/index.js";
+import type * as OaiPmhPackage from "../src/index.js";
+
+const packageEntry = resolve("dist/src/index.js");
+if (!existsSync(packageEntry)) {
+  throw new Error(
+    "Build output not found. Run `pnpm test`, or run `pnpm run build` before invoking node --test directly.",
+  );
+}
+
+const { OaiPmh, OaiPmhError } = (await import(
+  pathToFileURL(packageEntry).href
+)) as typeof OaiPmhPackage;
 
 const identifyXml = `<?xml version="1.0" encoding="UTF-8"?>
 <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/">
@@ -236,7 +250,7 @@ test("HTTP 503 Retry-After is honored before retrying", async () => {
 });
 
 test("CLI renders command help", async () => {
-  const cliPath = new URL("../bin/oai-pmh.js", import.meta.url);
+  const cliPath = pathToFileURL(resolve("dist/bin/oai-pmh.js"));
   const result = await new Promise<{ code: number | null; output: string }>((resolve) => {
     const child = spawn(process.execPath, [cliPath.pathname, "--help"], {
       stdio: ["ignore", "pipe", "pipe"],
