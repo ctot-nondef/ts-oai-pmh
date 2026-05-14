@@ -14,7 +14,7 @@
   "author": "Christoph Hoffmann",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ctot-nondef/oai-pmh.git"
+    "url": "git+https://github.com/ctot-nondef/ts-oai-pmh.git"
   },
   "bin": {
     "oai-pmh": "dist/bin/oai-pmh.js"
