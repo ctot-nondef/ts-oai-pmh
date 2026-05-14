@@ -1,77 +1,64 @@
 {
-	"name": "@nondef/ts-oai-pmh",
-	"version": "0.0.2",
-	"description": "OAI-PMH harvester module for nodejs - typescript refactor",
-	"main": "dist/index.js",
-	"scripts": {
-		"build": "tsc",
-		"postbuild": "cp package*.json dist && cd dist && pnpm install --prod",
-		"test": "nyc --reporter=lcov mocha --exit --require ts-node/register test/*.ts",
-		"coverage:badge": "coverage-badge-creator",
-		"bin": "node dist/bin/index.js",
-		"document": "npx typedoc src/index.ts",
-		"format:check": "prettier . --cache --check --ignore-path ./.gitignore",
-		"format:fix": "pnpm run format:check --write",
-		"lint:fix": "eslint . --cache --ext .js,.ts --ignore-path ./.gitignore --fix",
-		"validate": "run-p format:fix lint:fix"
-	},
-	"bin": {
-		"ts-boilerplate": "dist/bin/index.js"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/ctot-nondef/oai-pmh.git"
-	},
-	"keywords": [
-		"ts",
-		"typescript",
-		"oai-pmh",
-		"harvesting",
-		"crawl",
-		"metadata"
-	],
-	"author": "Christoph Hoffmann",
-	"license": "GPL-3.0",
-	"devDependencies": {
-		"@types/axios": "^0.14.0",
-		"@types/chai": "4.1.2",
-		"@types/mocha": "2.2.48",
-		"@types/node": "18.11.10",
-		"@types/xml2js": "^0.4.14",
-		"@types/lodash": "^4.14.202",
-		"@acdh-oeaw/prettier-config": "^1.0.1",
-		"@acdh-oeaw/tsconfig": "^1.0.1",
-		"@acdh-oeaw/eslint-config": "^1.0.5",
-		"chai": "^4.1.2",
-		"mocha": "^10.2.0",
-		"nyc": "^15.1.0",
-		"ts-node": "4.1.0",
-		"tslint": "5.9.1",
-		"typedoc": "^0.25.6",
-		"prettier": "^3.1.1",
-		"eslint": "^8.56.0",
-		"typescript": "^5.2.2",
-		"npm-run-all2": "^6.1.1"
-	},
-	"dependencies": {
-		"commander": "9.5.0",
-		"axios": "^1.6.3",
-		"xml2js": "^0.6.2",
-		"zod": "^3.22.4"
-	},
-	"standard": {
-		"env": {
-			"mocha": true
-		}
-	},
-	"engines": {
-		"node": ">=18"
-	},
-	"eslintConfig": {
-		"extends": [
-			"@acdh-oeaw/eslint-config",
-			"@acdh-oeaw/eslint-config/strict"
-		]
-	},
-	"prettier": "@acdh-oeaw/prettier-config"
+  "name": "@nondef/ts-oai-pmh",
+  "version": "1.0.0",
+  "description": "OAI-PMH 2.0 harvester for Node.js",
+  "keywords": [
+    "crawl",
+    "harvesting",
+    "metadata",
+    "oai-pmh",
+    "ts",
+    "typescript"
+  ],
+  "license": "GPL-3.0",
+  "author": "Christoph Hoffmann",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ctot-nondef/oai-pmh.git"
+  },
+  "bin": {
+    "oai-pmh": "./dist/bin/oai-pmh.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "type": "module",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "tsc -p tsconfig.test.json && node --test \"dist-test/test/**/*.test.js\"",
+    "bin": "node dist/bin/oai-pmh.js",
+    "document": "typedoc src/index.ts",
+    "format:check": "oxfmt --check .",
+    "format:fix": "oxfmt .",
+    "lint": "oxlint .",
+    "validate": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run build && pnpm test"
+  },
+  "dependencies": {
+    "citty": "^0.2.2",
+    "xml2js": "^0.6.2",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.7.0",
+    "@types/xml2js": "^0.4.14",
+    "oxfmt": "^0.49.0",
+    "oxlint": "^1.64.0",
+    "typedoc": "^0.28.19",
+    "typescript": "^6.0.3"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@11.1.1"
 }

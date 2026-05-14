@@ -1,12 +1,18 @@
 {
-	"compilerOptions": {
-		"module": "commonjs",
-		"target": "es6",
-		"declaration": true,
-		"outDir": "./dist",
-		"allowSyntheticDefaultImports": true,
-		"strictNullChecks": true,
-		"lib": ["es6"]
-	},
-	"include": ["src/index.ts", "bin/oai-pmh.ts"]
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2025",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "lib": ["ES2025"],
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts", "bin/**/*.ts", "test/**/*.ts"]
 }

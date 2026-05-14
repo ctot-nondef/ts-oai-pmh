@@ -1,99 +1,120 @@
 import { z } from "zod";
 
-export const ZOAIError = z.object({
-	$: z.object({
-		code: z.enum([
-			"cannotDisseminateFormat",
-			"idDoesNotExist",
-			"badArgument",
-			"badVerb",
-			"noMetadataFormats",
-			"noRecordsMatch",
-			"badResumptionToken",
-			"noSetHierarchy",
-		]),
-	}),
-	_: z.string(),
-});
+import type { TOAIVerb } from "./EOAIVerbs.enum.js";
+import type { TOAIProtocolErrorCode } from "./errors.js";
 
-export const ZOAIResumptionToken = z.object({
-	_: z.string().optional(),
-	expirationDate: z.array(z.string().datetime()).optional(),
-	completeListSize: z.array(z.number().positive()).optional(),
-	cursor: z.array(z.number().nonnegative()).optional(),
-});
-export type TOAIResumptionToken = z.infer<typeof ZOAIResumptionToken>;
+export const ZOAIProtocolErrorCode = z.enum([
+  "badArgument",
+  "badResumptionToken",
+  "badVerb",
+  "cannotDisseminateFormat",
+  "idDoesNotExist",
+  "noMetadataFormats",
+  "noRecordsMatch",
+  "noSetHierarchy",
+]);
 
-export const ZOAIGetRecordsResponse = z.array(z.object({ record: z.array(z.object({})) }));
-export type TOAIGetRecordsResponse = z.infer<typeof ZOAIGetRecordsResponse>;
+export const ZOAIEnvelope = z
+  .object({
+    "OAI-PMH": z
+      .object({
+        responseDate: z.array(z.unknown()).min(1),
+        request: z.array(z.unknown()).min(1),
+        error: z
+          .array(
+            z.object({
+              $: z.object({
+                code: ZOAIProtocolErrorCode,
+              }),
+              _: z.string().optional(),
+            }),
+          )
+          .optional(),
+      })
+      .passthrough(),
+  })
+  .passthrough();
 
-export const ZOAIListMetadataFormatsResponse = z.array(
-	z.object({
-		metadataFormat: z.array(
-			z.object({
-				metadataPrefix: z.array(z.object({ _: z.string() })),
-				schema: z.array(z.object({ _: z.string().url() })),
-				metadataNamespace: z.array(z.object({ _: z.string().url() })),
-			}),
-		),
-	}),
-);
-export type TOAIListMetadataFormatsResponse = z.infer<typeof ZOAIListMetadataFormatsResponse>;
+export type TOAIXmlElement = {
+  _?: string;
+  $?: Record<string, string>;
+  [key: string]: unknown;
+};
 
-export const ZOAIIdentifyResponse = z.array(
-	z.object({
-		repositoryName: z.array(z.object({ _: z.string() })),
-		baseURL: z.array(z.object({ _: z.string().url() })),
-		protocolVersion: z.array(z.object({ _: z.string() })),
-		adminEmail: z.array(z.object({ _: z.string().email() })),
-		earliestDatestamp: z.array(z.object({ _: z.string() })),
-		deletedRecord: z.array(z.object({ _: z.enum(["no", "persistent", "transient"]) })),
-		granularity: z.array(z.object({ _: z.enum(["YYYY-MM-DD", "YYYY-MM-DDThh:mm:ssZ"]) })),
-		compression: z.array(z.object({ _: z.string() })).optional(),
-		description: z.array(z.any()),
-	}),
-);
-export type TOAIIdentifyResponse = z.infer<typeof ZOAIIdentifyResponse>;
+export interface TOAIRequest {
+  baseUrl: string;
+  attributes: Record<string, string>;
+  verb?: TOAIVerb;
+}
 
-export const ZOAIListSetsResponse = z.array(
-	z.object({
-		set: z.array(z.unknown()),
-		resumptionToken: z.array(ZOAIResumptionToken).optional(),
-	}),
-);
-export type TOAIListSetsResponse = z.infer<typeof ZOAIListSetsResponse>;
+export interface TOAIResponse<TData> {
+  responseDate: string;
+  request: TOAIRequest;
+  data: TData;
+}
 
-export const ZOAIListIdenfifiersResponse = z.array(
-	z.object({
-		header: z.array(z.unknown()),
-		resumptionToken: z.array(ZOAIResumptionToken).optional(),
-	}),
-);
-export type TOAIListIdenfifiersResponse = z.infer<typeof ZOAIListIdenfifiersResponse>;
+export interface TOAIProtocolError {
+  code: TOAIProtocolErrorCode;
+  message: string;
+}
 
-export const ZOAIListRecordsResponse = z.array(
-	z.object({
-		record: z.array(z.unknown()).optional(),
-		resumptionToken: z.array(ZOAIResumptionToken).optional(),
-	}),
-);
-export type TOAIListRecordsResponse = z.infer<typeof ZOAIListRecordsResponse>;
+export interface TOAIResumptionToken {
+  value: string;
+  expirationDate?: string;
+  completeListSize?: number;
+  cursor?: number;
+}
 
-export const ZOAIResponse = z.object({
-	"OAI-PMH": z.object({
-		responseDate: z.array(
-			z.object({
-				_: z.string().datetime(),
-			}),
-		),
-		request: z.unknown(),
-		error: z.array(ZOAIError).optional(),
-		GetRecord: ZOAIGetRecordsResponse.optional(),
-		ListMetadataFormats: ZOAIListMetadataFormatsResponse.optional(),
-		Identify: ZOAIIdentifyResponse.optional(),
-		ListSets: ZOAIListSetsResponse.optional(),
-		ListIdentifiers: ZOAIListIdenfifiersResponse.optional(),
-		ListRecords: ZOAIListRecordsResponse.optional(),
-	}),
-});
-export type TOAIResponse = z.infer<typeof ZOAIResponse>;
+export interface TOAIIdentifyResponseData {
+  repositoryName: string;
+  baseURL: string;
+  protocolVersion: string;
+  adminEmails: string[];
+  earliestDatestamp: string;
+  deletedRecord: "no" | "persistent" | "transient";
+  granularity: "YYYY-MM-DD" | "YYYY-MM-DDThh:mm:ssZ";
+  compressions: string[];
+  descriptions: unknown[];
+}
+
+export interface TOAIHeader {
+  identifier: string;
+  datestamp: string;
+  setSpecs: string[];
+  status?: "deleted";
+  raw: unknown;
+}
+
+export interface TOAIRecord {
+  header: TOAIHeader;
+  metadata?: unknown;
+  about: unknown[];
+  raw: unknown;
+}
+
+export interface TOAIMetadataFormat {
+  metadataPrefix: string;
+  schema: string;
+  metadataNamespace: string;
+  raw: unknown;
+}
+
+export interface TOAISet {
+  setSpec: string;
+  setName: string;
+  setDescription: unknown[];
+  raw: unknown;
+}
+
+export interface TOAIListResponseData<TItem> {
+  items: TItem[];
+  resumptionToken?: TOAIResumptionToken;
+}
+
+export type TOAIIdentifyResponse = TOAIResponse<TOAIIdentifyResponseData>;
+export type TOAIGetRecordsResponse = TOAIResponse<TOAIRecord>;
+export type TOAIListMetadataFormatsResponse = TOAIResponse<TOAIMetadataFormat[]>;
+export type TOAIListIdenfifiersResponse = TOAIResponse<TOAIListResponseData<TOAIHeader>>;
+export type TOAIListIdentifiersResponse = TOAIListIdenfifiersResponse;
+export type TOAIListRecordsResponse = TOAIResponse<TOAIListResponseData<TOAIRecord>>;
+export type TOAIListSetsResponse = TOAIResponse<TOAIListResponseData<TOAISet>>;
